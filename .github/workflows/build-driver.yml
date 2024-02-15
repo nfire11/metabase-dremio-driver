@@ -38,6 +38,10 @@ jobs:
           # Install just one or all simultaneously
           cli: 'latest' # Clojure CLI based on tools.deps
 
+      - name: "cat build.sh"
+        run: |
+          cat metabase-dremio-driver/build.sh
+
       - name: "Run build.sh"
         run: |
           cd metabase-dremio-driver && ./build.sh
