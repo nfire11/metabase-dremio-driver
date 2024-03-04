@@ -28,6 +28,11 @@
 
 (driver/register! :dremio, :parent #{:postgres ::legacy/use-legacy-classes-for-read-and-set})
 
+(doseq [[feature supported?] {:table-privileges                false
+                              :set-timezone                    false
+                              :connection-impersonation        false}]
+  (defmethod driver/database-supports? [:dremio feature] [_driver _feature _db] supported?))
+
 ;;; +----------------------------------------------------------------------------------------------------------------+
 ;;; |                                             metabase.driver impls                                              |
 ;;; +----------------------------------------------------------------------------------------------------------------+
@@ -108,6 +113,10 @@
 (defmethod unprepare/unprepare-value [:dremio ZonedDateTime]
   [driver t]
   (unprepare/unprepare-value driver (t/offset-date-time t)))
+
+;; Dremio is always in UTC
+(defmethod driver/db-default-timezone :dremio [_ _]
+           "UTC")
 
 ;; Dremio's jdbc doesn't support getObject(Class<T> type)
 (prefer-method
